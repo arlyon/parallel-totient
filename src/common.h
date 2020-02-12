@@ -35,7 +35,7 @@ bool relatively_prime(uint32_t x, uint32_t y)
 uint32_t euler_totient(uint32_t n)
 {
     uint32_t length = 0;
-    for (uint32_t i = 1; i < n; i++)
+    for (uint32_t i = 1; i < n; i += (n % 2 == 0) ? 2 : 1)
         if (relatively_prime(n, i))
             length++;
     return length;
