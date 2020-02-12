@@ -3,6 +3,7 @@
 # Initialize our own variables:
 cores="4"
 
+cd build
 module load cmake
 module load intel/mpi/64
 cmake . > /dev/null 2>&1
@@ -37,3 +38,5 @@ cmake --build . --target ${binary}
 rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
 echo -e "\e[32mRunning ${1} on ${cores} cores\e[0m"
 srun --partition=amd-longq -N ${cores} --mpi=pmi2 ${1}
+
+cd ..
