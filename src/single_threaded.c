@@ -19,7 +19,8 @@ long hcf(long x, long y)
 {
     long t;
 
-    while (y != 0) {
+    while (y != 0)
+    {
         t = x % y;
         x = y;
         y = t;
@@ -27,14 +28,12 @@ long hcf(long x, long y)
     return x;
 }
 
-
 // relprime x y = hcf x y == 1
 
 int relprime(long x, long y)
 {
     return hcf(x, y) == 1;
 }
-
 
 // euler n = length (filter (relprime n) [1 .. n-1])
 
@@ -49,7 +48,6 @@ long euler(long n)
     return length;
 }
 
-
 // sumTotient lower upper = sum (map euler [lower, lower+1 .. upper])
 
 long sumTotient(long lower, long upper)
@@ -62,32 +60,32 @@ long sumTotient(long lower, long upper)
     return sum;
 }
 
-
 void runBenchmark()
 {
     clock_t start, end;
     double time_taken;
 
-    for (long i = 1; i < 1000000 ; i = i + 100000) {
+    for (long i = 1; i < 1000000; i = i + 100000)
+    {
         start = clock();
         euler(i);
         end = clock();
-        time_taken = ((double) (end - start)) / CLOCKS_PER_SEC;
+        time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
         printf("euler(%lu) = %f seconds\n", i, time_taken);
     }
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
     long lower, upper;
 
-    if (argc != 3) {
+    if (argc != 3)
+    {
         printf("not 2 arguments\n");
         return 1;
     }
     sscanf(argv[1], "%ld", &lower);
     sscanf(argv[2], "%ld", &upper);
-    printf("C: Sum of Totients  between [%ld..%ld] is %ld\n",
-           lower, upper, sumTotient(lower, upper));
+    printf("C: Sum of Totients  between [%ld..%ld] is %ld\n", lower, upper, sumTotient(lower, upper));
     return 0;
 }
