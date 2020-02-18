@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Initialize our own variables:
-cores="4"
+machines="1"
 release_mode="Release"
 
 cd build
@@ -10,7 +10,7 @@ module load intel/mpi/64
 cmake . > /dev/null 2>&1
 
 usage() {
-    echo "Usage: $0 [-n <cores>] BINARY" 1>&2;
+    echo "Usage: $0 [-n <machines>] BINARY" 1>&2;
     exit 1;
 }
 
@@ -20,7 +20,7 @@ while getopts "h?n:d" opt; do
         usage
         ;;
     n)
-        cores=${OPTARG}
+        machines=${OPTARG}
         ;;
     d)
         release_mode="Debug"
@@ -34,14 +34,14 @@ while getopts "h?n:d" opt; do
     esac
 done
 shift $((OPTIND-1))
-
 binary=${1:-all}
+shift
 
 echo -e "\e[32mBuilding ${binary}\e[0m"
 cmake -DCMAKE_BUILD_TYPE=${release_mode} ..
 make ${binary}
 rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
-echo -e "\e[32mRunning ${1} on ${cores} cores\e[0m"
-srun --partition=amd-longq -N ${cores} --mpi=pmi2 ${1}
+echo -e "\e[32mRunning ${binary} on ${machines} machine(s)\e[0m"
+srun --partition=amd-longq -N ${machines} --mpi=pmi2 ${binary} ${@}
 
 cd ..
