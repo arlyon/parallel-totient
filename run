@@ -2,6 +2,7 @@
 
 # Initialize our own variables:
 cores="4"
+release_mode="Release"
 
 cd build
 module load cmake
@@ -13,13 +14,16 @@ usage() {
     exit 1;
 }
 
-while getopts "h?n:" opt; do
+while getopts "h?n:d" opt; do
     case "$opt" in
     h|\?)
         usage
         ;;
     n)
         cores=${OPTARG}
+        ;;
+    d)
+        release_mode="Debug"
         ;;
     \? )
         echo "Invalid option: $OPTARG" 1>&2
@@ -34,7 +38,8 @@ shift $((OPTIND-1))
 binary=${1:-all}
 
 echo -e "\e[32mBuilding ${binary}\e[0m"
-cmake --build . --target ${binary}
+cmake -DCMAKE_BUILD_TYPE=${release_mode} ..
+make ${binary}
 rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
 echo -e "\e[32mRunning ${1} on ${cores} cores\e[0m"
 srun --partition=amd-longq -N ${cores} --mpi=pmi2 ${1}
