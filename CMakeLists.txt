@@ -13,6 +13,9 @@ target_link_libraries(totient_mpi PUBLIC MPI::MPI_C)
 find_package(OpenMP REQUIRED)
 target_link_libraries(totient_openmp PUBLIC OpenMP::OpenMP_C)
 
+# add the __FILENAME__ macro to allow the debug to print the file
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+
 if (NOT MSVC)
     target_compile_options(totient_openmp PRIVATE -Wall -Wextra -pedantic)
 endif ()
