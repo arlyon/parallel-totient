@@ -4,10 +4,11 @@
 machines="1"
 release_mode="Release"
 
+mkdir -p build
 cd build
 module load cmake
 module load intel/mpi/64
-cmake . > /dev/null 2>&1
+cmake .. > /dev/null 2>&1
 
 usage() {
     echo "Usage: $0 [-n <machines>] BINARY" 1>&2;
