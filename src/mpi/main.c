@@ -16,13 +16,12 @@ int main(int argc, char** argv)
     uint32_t start, end, total;
     const uint32_t lower = strtoul(argv[optind], NULL, 10);
     const uint32_t upper = strtoul(argv[optind + 1], NULL, 10);
+    printf("lower: %u \t upper: %u\n", lower, upper);
 
-    if (upper < lower){
-        if (upper <= lower)
-        {
-            printf("\033[0;31mError:\033[0m Upper bound must be greater (or equal to) lower bound\n");
-            return 1;
-        }
+    if (upper <= lower)
+    {
+        printf("\033[0;31mError:\033[0m Upper bound must be greater (or equal to) lower bound\n");
+        return 1;
     }
 
     // MPI
@@ -31,15 +30,17 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
     const uint32_t batchSize = (upper-lower)/processors;
 
-    start = id * batchSize;
-    end = (id+1) * batchSize;
+    start = id * batchSize + lower;
+    end = (id+1) * batchSize + lower;
     end = (end < upper) ? end : upper + 1;
+    printf("Processor %d starts at %u and ends at %u.\n", id, start, end-1);
 
     uint32_t sum = 0;
     for (int i = start; start < end; i++){
         sum += euler_totient(i);
     }
 
+    printf("Processor %d has finished and reduced.\n");
     MPI_Reduce(&sum, &total, 1, MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Finalize();
 
