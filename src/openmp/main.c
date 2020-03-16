@@ -20,8 +20,7 @@ uint32_t sum_totient(const uint32_t lower, const uint32_t upper)
 #pragma omp parallel for schedule(runtime) reduction(+ : sum)
     for (uint32_t i = lower; i <= upper; i++)
     {
-        int thread_id = omp_get_thread_num();
-        debug_print("Calculating euler totient for %d on thread %d\n", i, thread_id);
+        debug_print("Calculating euler totient for %d\n", i);
         sum += euler_totient(i);
     }
 
