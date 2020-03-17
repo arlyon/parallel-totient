@@ -34,8 +34,9 @@ int main(int argc, char **argv)
     uint32_t threads = omp_get_num_procs();
     omp_sched_t scheduler = omp_sched_static;
     uint32_t batch_size = 0;
+    bool bench = false;
 
-    parseOptions(argc, argv, &threads, &scheduler, &batch_size);
+    parseOptions(argc, argv, &threads, &scheduler, &batch_size, &bench);
 
     omp_set_num_threads(threads);
     omp_set_schedule(scheduler, batch_size);
@@ -62,5 +63,14 @@ int main(int argc, char **argv)
     }
 
     debug_print("Running totient range for [%d, %d]\n", lower, upper);
-    printf("%u\n", sum_totient(lower, upper));
+
+    for (uint8_t i = 0; i < (uint8_t)(bench ? 5 : 1); i++) {
+        double start = omp_get_wtime();
+        uint32_t sum = sum_totient(lower, upper);
+        double end = omp_get_wtime();
+        double time_taken = end - start;
+        printf("%u", sum);
+        if (bench) printf(",%f", time_taken);
+        printf("\n");
+    }
 }

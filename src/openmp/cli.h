@@ -18,17 +18,18 @@ void printUsage(char **argv)
            "\t     Defaults to the number of logical cores on this machine\n"
            "\t-s : The scheduler to use (static|dynamic|guided|auto)\n"
            "\t     Defaults to static\n"
-           "\t-c : The batch size"
-           "\t     Defaults to automatically determining the best"
+           "\t-c : The batch size\n"
+           "\t     Defaults to automatically determining the best\n"
+           "\t-p : Enable the profiler and print out times\n"
            "\n");
     printf("Example usage:\n\t%s [-t 4] LOWER UPPER\n\n", argv[0]);
 }
 
-void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *scheduler, uint32_t *batch_size)
+void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *scheduler, uint32_t *batch_size, bool *time)
 {
     opterr = false;
     int opt;
-    while ((opt = getopt(argc, argv, "t:s:b:")) != -1)
+    while ((opt = getopt(argc, argv, "t:s:b:p")) != -1)
     {
         switch (opt)
         {
@@ -53,6 +54,9 @@ void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *schedul
             break;
         case 'b':
             *batch_size = strtoul(optarg, NULL, 10);
+            break;
+        case 'p':
+            *time = true;
             break;
         default:
             printUsage(argv);
