@@ -3,19 +3,14 @@
 # Initialize our own variables:
 machines="1"
 release_mode="Release"
-
-mkdir -p build
-cd build
-module load cmake
-module load intel/mpi/64
-cmake .. > /dev/null 2>&1
+bench=""
 
 usage() {
     echo "Usage: $0 [-n <machines>] BINARY" 1>&2;
     exit 1;
 }
 
-while getopts "h?n:d" opt; do
+while getopts "h?n:db:" opt; do
     case "$opt" in
     h|\?)
         usage
@@ -25,6 +20,9 @@ while getopts "h?n:d" opt; do
         ;;
     d)
         release_mode="Debug"
+        ;;
+    b)
+        bench=${OPTARG}
         ;;
     \? )
         echo "Invalid option: $OPTARG" 1>&2
@@ -38,11 +36,23 @@ shift $((OPTIND-1))
 binary=${1:-all}
 shift
 
-echo -e "\e[32mBuilding ${binary}\e[0m"
-cmake -DCMAKE_BUILD_TYPE=${release_mode} ..
-make ${binary}
-rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
-echo -e "\e[32mRunning ${binary} on ${machines} machine(s)\e[0m"
-srun --partition=amd-longq -N ${machines} --mpi=pmi2 ${binary} ${@}
+module load intel/mpi/64
 
-cd ..
+if [[ ! ${bench} ]]; then
+  mkdir -p build
+  cd build
+  module load cmake
+  echo -e "\e[32mBuilding ${binary}\e[0m"
+  cmake -DCMAKE_BUILD_TYPE=${release_mode} .. > /dev/null 2>&1
+  make ${binary}
+  cd ..
+fi
+
+rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
+echo -e "\e[32mRunning ${binary} on ${machines} machine(s) with args ${@}\e[0m"
+
+if [ ! ${bench} ]; then
+    srun --partition=amd-shortq -N ${machines} --mpi=pmi2 build/${binary} ${@}
+else
+    srun --partition=amd-shortq -N ${machines} --mpi=pmi2 build/${binary} ${@} | tee ${bench}
+fi
