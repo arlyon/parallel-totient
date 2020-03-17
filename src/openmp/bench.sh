@@ -1,10 +1,11 @@
 ./run
 
-for c in $(seq 64 -2 1); do
-  for i in 15000 30000 100000; do
-    FILE=results/${c}-${i}.log
-    if [ ! -f "$FILE" ]; then
-        ./run -b ${FILE} totient_openmp -p -t ${c} 1 ${i}
-    fi
-  done
-done
+execute() {
+  FILE=results/${1}-${2}.log
+  if [ ! -f "$FILE" ]; then
+    ./run -b ${FILE} totient_openmp -p -t ${1} 1 ${2}
+  fi
+}
+
+export -f execute
+echo -e {1..64}"\n"{15000,30000,100000}"\n" | awk '{$1=$1;print}' | awk 'NF' | parallel -j 8 -n 2 execute
