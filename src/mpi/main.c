@@ -3,13 +3,17 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <mpi.h>
 #include "../common.h"
+#include "cli.h"
 
 int main(int argc, char** argv)
 {
+    bool benchmark;
+    parseOptions(argc, argv, &benchmark);
     // Ensuring correct number of arguments
     if (argc-optind != 2){
         printf("\033[0;31mError:\033[0m Must provide exactly 2 arguments (rather than %d)\n", argc - optind);
@@ -52,7 +56,10 @@ int main(int argc, char** argv)
 
 
     if (id == 0) {
-        printf("The sum of euler totients in range [%u...%u] is %u.\n Time taken was %f.\n", lower, upper, sum, elapsed_time);
+        printf("%u", total);
+        if (benchmark)
+            printf(",%u", elapsed_time);
+        printf("\n");
     }
 
     // MPI teardown

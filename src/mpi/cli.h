@@ -1,6 +1,10 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 void printUsage(char **argv)
 {
@@ -13,7 +17,7 @@ void printUsage(char **argv)
     printf("Example usage:\n\t%s [-b] LOWER UPPER\n\n", argv[0]);
 }
 
-void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *scheduler, uint32_t *batch_size)
+void parseOptions(int argc, char **argv, bool *benchmark)
 {
     opterr = false;
     int opt;
