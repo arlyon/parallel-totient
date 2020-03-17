@@ -6,18 +6,18 @@
 #include <string.h>
 #include <unistd.h>
 
-void printUsage(char **argv)
+void print_usage(char **argv)
 {
     printf("This tool computes the sum of the euler totients\n"
            "between a range of numbers as provided via the\n"
            "command line arguments.\n"
            "\n"
            "Arguments:\n"
-           "\t-b : Run in Benchmarking mode\n");
+           "\t-p : Enable the profiler and print out running time\n");
     printf("Example usage:\n\t%s [-b] LOWER UPPER\n\n", argv[0]);
 }
 
-void parseOptions(int argc, char **argv, bool *benchmark)
+void parse_options(int argc, char **argv, bool *time)
 {
     opterr = false;
     int opt;
@@ -25,11 +25,11 @@ void parseOptions(int argc, char **argv, bool *benchmark)
     {
         switch (opt)
         {
-            case 'b':
-                *benchmark= true;
+            case 'p':
+                *time = true;
                 break;
             default:
-                printUsage(argv);
+                print_usage(argv);
                 printf("\033[0;31mError:\033[0m Unknown option: %c\n", optopt);
                 exit(EXIT_FAILURE);
         }

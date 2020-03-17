@@ -1,6 +1,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/**
+ * Adapted by Alexander Lyon (H00276422) in 2020 from sample sequential implementation for coursework.
+ *
+ * Greg Michaelson 14/10/2003
+ * Patrick Maier   29/01/2010 [enforced ANSI C compliance] This program calculates the sum of the totients between
+ * a lower and an upper limit using C longs. It is based on earlier work by:
+ * Phil Trinder, Nathan Charles, Hans-Wolfgang Loidl and Colin Runciman
+ */
+
 #pragma once
 
 /**

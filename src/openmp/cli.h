@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void printUsage(char **argv)
+void print_usage(char **argv)
 {
     printf("This tool computes the sum of the euler totients\n"
            "between a range of numbers as provided via the\n"
@@ -20,12 +20,12 @@ void printUsage(char **argv)
            "\t     Defaults to static\n"
            "\t-c : The batch size\n"
            "\t     Defaults to automatically determining the best\n"
-           "\t-p : Enable the profiler and print out times\n"
+           "\t-p : Enable the profiler and print out running time\n"
            "\n");
     printf("Example usage:\n\t%s [-t 4] LOWER UPPER\n\n", argv[0]);
 }
 
-void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *scheduler, uint32_t *batch_size, bool *time)
+void parse_options(int argc, char **argv, uint32_t *threads, omp_sched_t *scheduler, uint32_t *batch_size, bool *time)
 {
     opterr = false;
     int opt;
@@ -47,7 +47,7 @@ void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *schedul
                 *scheduler = omp_sched_guided;
             else
             {
-                printUsage(argv);
+                print_usage(argv);
                 printf("\033[0;31mError:\033[0m Unknown argument for option %c: %s\n", optopt, optarg);
                 exit(EXIT_FAILURE);
             }
@@ -59,7 +59,7 @@ void parseOptions(int argc, char **argv, uint32_t *threads, omp_sched_t *schedul
             *time = true;
             break;
         default:
-            printUsage(argv);
+            print_usage(argv);
             printf("\033[0;31mError:\033[0m Unknown option: %c\n", optopt);
             exit(EXIT_FAILURE);
         }

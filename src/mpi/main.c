@@ -8,12 +8,38 @@
 #include <unistd.h>
 #include <mpi.h>
 #include "../common.h"
-#include "cli.h"
+#include "../cli.h"
+
+__uint32_t sum_totient(lower, upper, processes, id, timed){
+    double elapsed_time;
+    uint32_t total;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double local_time = -MPI_Wtime();
+
+    uint32_t sum = 0;
+    for (int i = id+lower; i <= upper; i+=processes){
+        sum += euler_totient(i);
+    }
+
+    // Reduce euler sum and time taken back to root process
+    MPI_Reduce(&sum, &total, 1, MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+    local_time+= MPI_Wtime();
+    MPI_Reduce(&local_time, &elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+
+    if (id == 0) {
+        printf("%u", total);
+        if (timed)
+            printf(",%f", elapsed_time);
+        printf("\n");
+    }
+}
 
 int main(int argc, char** argv)
 {
     bool benchmark;
-    parseOptions(argc, argv, &benchmark);
+    parse_options(argc, argv, &benchmark);
     // Ensuring correct number of arguments
     if (argc-optind != 2){
         printf("\033[0;31mError:\033[0m Must provide exactly 2 arguments (rather than %d)\n", argc - optind);
@@ -22,8 +48,6 @@ int main(int argc, char** argv)
 
     // Variables
     int processes, id;
-    uint32_t total;
-    double elapsed_time;
     const uint32_t lower = strtoul(argv[optind], NULL, 10);
     const uint32_t upper = strtoul(argv[optind + 1], NULL, 10);
 
@@ -39,28 +63,8 @@ int main(int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
-    // MPI Timing
-    MPI_Barrier(MPI_COMM_WORLD);
-    double local_time = MPI_Wtime();
-
-    // Euler's totient distributing work evenly across processes. Done by incrementing by number of processors.
-    uint32_t sum = 0;
-    for (int i = id+lower; i <= upper; i+=processes){
-        sum += euler_totient(i);
-    }
-
-    // Reduce euler sum and time taken back to root process
-    MPI_Reduce(&sum, &total, 1, MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-    local_time = MPI_Wtime() - local_time;
-    MPI_Reduce(&local_time, &elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
 
-    if (id == 0) {
-        printf("%u", total);
-        if (benchmark)
-            printf(",%u", elapsed_time);
-        printf("\n");
-    }
 
     // MPI teardown
     MPI_Finalize();
