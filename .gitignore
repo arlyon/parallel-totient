@@ -1,6 +1,8 @@
 # Custom
 connect.sh
 /.idea
+/results*/
+/results*.csv
 
 # Created by .ignore support plugin (hsz.mobi)
 ### CMake template
