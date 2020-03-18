@@ -21,7 +21,7 @@ void parse_options(int argc, char **argv, bool *time)
 {
     opterr = false;
     int opt;
-    while ((opt = getopt(argc, argv, "b")) != -1)
+    while ((opt = getopt(argc, argv, "p")) != -1)
     {
         switch (opt)
         {

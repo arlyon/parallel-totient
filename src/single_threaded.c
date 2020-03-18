@@ -49,17 +49,22 @@ int main(int argc, char **argv)
     const uint32_t lower = strtoul(argv[optind], NULL, 10);
     const uint32_t upper = strtoul(argv[optind + 1], NULL, 10);
 
-    clock_t start = clock();
-    result = sum_totient(lower, upper);
-    double elapsed_time = ((double)(clock() - start)) / CLOCKS_PER_SEC;
+    if (upper <= lower)
+    {
+        printf("\033[0;31mError:\033[0m Upper bound must be greater (or equal to) lower bound\n");
+        return 1;
+    }
 
+    for (uint8_t i = 0; i< (uint8_t)(benchmark ? 5 : 1); i++){
+        clock_t start = clock();
+        result = sum_totient(lower, upper);
+        double elapsed_time = ((double)(clock() - start)) / CLOCKS_PER_SEC;
+        // Modified print to be in line with rest of project
+        printf("%u", result);
+        if (benchmark)
+            printf(",%f", elapsed_time);
+        printf("\n");
+    }
 
-
-
-    // Modified print to be in line with rest of project
-    printf("%u", result);
-    if (benchmark)
-        printf(",%f", elapsed_time);
-    printf("\n");
     return 0;
 }

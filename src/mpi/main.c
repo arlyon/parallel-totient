@@ -1,5 +1,7 @@
 /**
- * Written by Jerome Illgner (H00263642) for Distributed and Parallel Technologies
+ * Written by Jerome Illgner (H00263642) for Distributed and Parallel Technologies (F20DP)
+ *
+ * Calculates the sum of euler totients within a range [lower, upper] using MPI for parallelisation.
  */
 
 #include <stdio.h>
@@ -10,6 +12,7 @@
 #include "../common.h"
 #include "../cli.h"
 
+// Function to calculate the euler totient sum and time it
 __uint32_t sum_totient(lower, upper, processes, id, timed){
     double elapsed_time;
     uint32_t total;
@@ -27,13 +30,13 @@ __uint32_t sum_totient(lower, upper, processes, id, timed){
     local_time+= MPI_Wtime();
     MPI_Reduce(&local_time, &elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-
     if (id == 0) {
         printf("%u", total);
         if (timed)
             printf(",%f", elapsed_time);
         printf("\n");
     }
+    return total;
 }
 
 int main(int argc, char** argv)
@@ -63,8 +66,10 @@ int main(int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
-
-
+    // Run experiment 5 times if in benchmarking/profiling mode
+    for (uint8_t i=0; i < (uint8_t)(benchmark ? 5 : 1); i++){
+        sum_totient(lower, upper, processes, id, benchmark);
+    }
 
     // MPI teardown
     MPI_Finalize();

@@ -1,5 +1,6 @@
 # Custom
 connect.sh
+results/
 build/
 .idea/
 /results*/
