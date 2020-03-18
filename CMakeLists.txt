@@ -3,9 +3,9 @@ project(parallel_totient C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(totient_mpi src/mpi/main.c src/common.h)
-add_executable(totient_openmp src/openmp/main.c src/common.h)
-add_executable(totient src/single_threaded.c)
+add_executable(totient_mpi src/mpi/main.c src/common.h src/cli.h)
+add_executable(totient_openmp src/openmp/main.c src/common.h src/openmp/logging.h src/openmp/cli.h)
+add_executable(totient src/single_threaded.c src/common.h src/cli.h)
 
 find_package(MPI REQUIRED)
 target_link_libraries(totient_mpi PUBLIC MPI::MPI_C)

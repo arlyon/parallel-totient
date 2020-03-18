@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     uint32_t batch_size = 0;
     bool bench = false;
 
-    parseOptions(argc, argv, &threads, &scheduler, &batch_size, &bench);
+    parse_options(argc, argv, &threads, &scheduler, &batch_size, &bench);
 
     omp_set_num_threads(threads);
     omp_set_schedule(scheduler, batch_size);
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
     if (argc - optind != 2)
     {
-        printUsage(argv);
+        print_usage(argv);
         printf("\033[0;31mError:\033[0m Must provide exactly 2 arguments (rather "
                "than %d)\n",
                argc - optind);
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
     if (upper < lower)
     {
-        printUsage(argv);
+        print_usage(argv);
         printf("\033[0;31mError:\033[0m Upper bound must be greater (or equal to) "
                "lower bound\n");
         return 1;

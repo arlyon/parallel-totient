@@ -4,13 +4,15 @@
 machines="1"
 release_mode="Release"
 bench=""
+queue="amd-shortq"
+tasks="0"
 
 usage() {
-    echo "Usage: $0 [-n <machines>] BINARY" 1>&2;
+    echo "Usage: $0 [-n <machines> -q <queue>] BINARY" 1>&2;
     exit 1;
 }
 
-while getopts "h?n:db:" opt; do
+while getopts "h?n:db:t:q:" opt; do
     case "$opt" in
     h|\?)
         usage
@@ -23,6 +25,12 @@ while getopts "h?n:db:" opt; do
         ;;
     b)
         bench=${OPTARG}
+        ;;
+    t)
+        tasks=${OPTARG}
+        ;;
+    q)
+        queue=${OPTARG}
         ;;
     \? )
         echo "Invalid option: $OPTARG" 1>&2
@@ -51,8 +59,12 @@ fi
 rc=$?; if [[ ${rc} != 0 ]] || [[ ${binary} == "all" ]]; then exit ${rc}; fi
 echo -e "\e[32mRunning ${binary} on ${machines} machine(s) with args ${@}\e[0m"
 
+if [ $tasks == "0" ]; then
+    tasks=$machines
+fi
+
 if [ ! ${bench} ]; then
-    srun --partition=amd-shortq -N ${machines} --mpi=pmi2 build/${binary} ${@}
+    srun --partition=${queue} -N ${machines} -n ${tasks} --mpi=pmi2 build/${binary} ${@}
 else
-    srun --partition=amd-shortq -N ${machines} --mpi=pmi2 build/${binary} ${@} | tee ${bench}
+    srun --partition=${queue} -N ${machines} -n ${tasks} --mpi=pmi2 build/${binary} ${@} | tee ${bench}
 fi

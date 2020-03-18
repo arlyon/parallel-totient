@@ -11,81 +11,60 @@
 
 #include <stdio.h>
 #include <time.h>
+// Added By Jerome
+#include <stdint.h>
+#include <stdbool.h>
+#include "common.h"
+#include "cli.h"
 
-// hcf x 0 = x
-// hcf x y = hcf y (rem x y)
+// Jerome removed common functions from "common.h"
+// Replaced long by uint32_t to bring in line with rest of project
 
-long hcf(long x, long y)
-{
-    long t;
-
-    while (y != 0)
-    {
-        t = x % y;
-        x = y;
-        y = t;
-    }
-    return x;
-}
-
-// relprime x y = hcf x y == 1
-
-int relprime(long x, long y)
-{
-    return hcf(x, y) == 1;
-}
-
-// euler n = length (filter (relprime n) [1 .. n-1])
-
-long euler(long n)
-{
-    long length, i;
-
-    length = 0;
-    for (i = 1; i < n; i++)
-        if (relprime(n, i))
-            length++;
-    return length;
-}
 
 // sumTotient lower upper = sum (map euler [lower, lower+1 .. upper])
-
-long sumTotient(long lower, long upper)
+uint32_t sum_totient(uint32_t lower, uint32_t upper)
 {
-    long sum, i;
+    uint32_t sum, i;
 
     sum = 0;
     for (i = lower; i <= upper; i++)
-        sum = sum + euler(i);
+        sum = sum + euler_totient(i);
     return sum;
 }
 
-void runBenchmark()
-{
-    clock_t start, end;
-    double time_taken;
+// Deleted unused benchmarking function
 
-    for (long i = 1; i < 1000000; i = i + 100000)
-    {
-        start = clock();
-        euler(i);
-        end = clock();
-        time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
-        printf("euler(%lu) = %f seconds\n", i, time_taken);
-    }
-}
-
+// modified slightly by Jerome
 int main(int argc, char **argv)
 {
-    long lower, upper;
+    bool benchmark;
+    parse_options(argc, argv, &benchmark);
+    uint32_t result;
 
-    if (argc != 3)
+    if (argc-optind != 2){
+        printf("\033[0;31mError:\033[0m Must provide exactly 2 arguments (rather than %d)\n", argc - optind);
+        exit(EXIT_FAILURE);
+    }
+
+    const uint32_t lower = strtoul(argv[optind], NULL, 10);
+    const uint32_t upper = strtoul(argv[optind + 1], NULL, 10);
+
+    if (upper <= lower)
     {
-        printf("not 2 arguments\n");
+        printf("\033[0;31mError:\033[0m Upper bound must be greater (or equal to) lower bound\n");
         return 1;
     }
-    sscanf(argv[1], "%ld", &lower);
-    sscanf(argv[2], "%ld", &upper);
-    printf("C: Sum of Totients  between [%ld..%ld] is %ld\n", lower, upper, sumTotient(lower, upper));
+
+    for (uint8_t i = 0; i< (uint8_t)(benchmark ? 5 : 1); i++){
+        clock_t start = clock();
+        result = sum_totient(lower, upper);
+        double elapsed_time = ((double)(clock() - start)) / CLOCKS_PER_SEC;
+        // Modified print to be in line with rest of project
+        printf("%u", result);
+        if (benchmark)
+            printf(",%f", elapsed_time);
+        printf("\n");
+    }
+
     return 0;
 }

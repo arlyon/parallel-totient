@@ -1,6 +1,8 @@
 # Custom
 connect.sh
-/.idea
+results/
+build/
+.idea/
 /results*/
 /results*.csv
 
